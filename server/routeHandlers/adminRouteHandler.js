@@ -8,8 +8,12 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const adminSchema = require("../schemas/adminSchema");
 const Admin = new mongoose.model("Admin", adminSchema); //singular name model
+const teacherSchema = require("../schemas/teacherSchema");
+const Teacher = new mongoose.model("Teacher", teacherSchema); 
+const courseSchema = require("../schemas/courseSchema");
+const Course = new mongoose.model("Course", courseSchema); 
 
-/************************ this is for later use of image handling
+/**************image handling for teacher and course ********************** */
 const UPLOADS_FOLDER = "./routeHandlers/uploads";
 // define the diskStorage->diskStorage has access over disk. to manipulate disk files
 const storage = multer.diskStorage({
@@ -30,8 +34,6 @@ const storage = multer.diskStorage({
     cb(null, fileName + fileExt);
   },
 });
-
-
 
 //file upload with multer-multer() returns a middleware to upload
 const upload = multer({
@@ -63,7 +65,7 @@ router.get("/", (req, res) => {
       }
   });
 });
-router.post("/", upload.single("photo"), async (req, res) => {
+/*router.post("/", upload.single("photo"), async (req, res) => {
   let newAdmin = {
     name: req.body.name,
     phone: req.body.phone,
@@ -83,9 +85,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
         res.send("successfully inserted into database");
     }
 });
-});
-
-********************* */
+});*/
 
 
 
@@ -119,5 +119,61 @@ router.post("/login", /*validation middleware goes here*/ async(req, res) => {
           res.send("error 2");
       }
 });
+
+//CREATE TEACHER
+router.post("/create/teacher", /*validation middleware goes here*/ upload.single("photo"), async(req, res)=>{
+try{
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const newTeacher = new Teacher({
+    name: req.body.name,
+    phone: req.body.phone,
+    email: req.body.email,
+    password: req.body.password,
+    password: hashedPassword,
+          photo: {
+            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            contentType: 'image/png'
+          }
+  });
+  await newTeacher.save();
+  res.status(200).json({
+    message: "teacher creation was successful!",
+  });
+}
+catch {
+  res.status(500).json({
+      message: "teacher creation failed!",
+  });
+}
+});
+
+//CREATE COURSE
+router.post("/create/course", /*validation middleware goes here*/ upload.single("photo"), async(req, res)=>{
+  try{
+    const newCourse = new Course({
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      photo: {
+              data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+              contentType: 'image/png'
+            }
+    });
+    await newCourse.save();
+    res.status(200).json({
+      message: "course creation was successful!",
+    });
+  }
+  catch {
+    res.status(500).json({
+        message: "course creation failed!",
+    });
+  }
+  });
+
+//ASSIGN or REMOVE TEACHER from a COURSE
+router.post("/update/instructor", async(req,res)=>{
+  
+})
 
 module.exports = router;
