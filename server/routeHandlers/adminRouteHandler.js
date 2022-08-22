@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 var fs = require('fs');
 var path = require('path');
 const multer = require('multer');
@@ -14,6 +15,7 @@ const courseSchema = require("../schemas/courseSchema");
 const Course = new mongoose.model("Course", courseSchema); 
 
 /**************image handling for teacher and course ********************** */
+
 const UPLOADS_FOLDER = "./routeHandlers/uploads";
 // define the diskStorage->diskStorage has access over disk. to manipulate disk files
 const storage = multer.diskStorage({
@@ -54,6 +56,7 @@ const upload = multer({
     }
   }
 });
+
 router.get("/", (req, res) => {
   Admin.find({}, (err, items) => {
       if (err) {
@@ -65,7 +68,7 @@ router.get("/", (req, res) => {
       }
   });
 });
-/*router.post("/", upload.single("photo"), async (req, res) => {
+router.post("/", upload.single("photo"), async (req, res) => {
   let newAdmin = {
     name: req.body.name,
     phone: req.body.phone,
@@ -85,7 +88,7 @@ router.get("/", (req, res) => {
         res.send("successfully inserted into database");
     }
 });
-});*/
+});
 
 
 
@@ -94,7 +97,7 @@ router.get("/login", (req,res)=>{
 });
 
 // LOGIN
-router.post("/login", /*validation middleware goes here*/ async(req, res) => {
+router.post("/login",  async(req, res) => {
     
       const admin = await Admin.find({ email: req.body.email });
       if(admin.length > 0) {
@@ -121,7 +124,7 @@ router.post("/login", /*validation middleware goes here*/ async(req, res) => {
 });
 
 //CREATE TEACHER
-router.post("/create/teacher", /*validation middleware goes here*/ upload.single("photo"), async(req, res)=>{
+router.post("/create/teacher", upload.single("photo"), async(req, res)=>{
 try{
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const newTeacher = new Teacher({
@@ -148,7 +151,7 @@ catch {
 });
 
 //CREATE COURSE
-router.post("/create/course", /*validation middleware goes here*/ upload.single("photo"), async(req, res)=>{
+router.post("/create/course", upload.single("photo"), async(req, res)=>{
   try{
     const newCourse = new Course({
       title: req.body.title,
@@ -170,9 +173,27 @@ router.post("/create/course", /*validation middleware goes here*/ upload.single(
     });
   }
   });
+  
 
 //ASSIGN or REMOVE TEACHER from a COURSE
-router.post("/update/instructor", async(req,res)=>{
+router.post("/update/instructor", upload.single("photo"), async(req,res)=>{
+  
+    const instructorArray = req.body.instructors.split(",");
+    instructorArray.forEach( async instructor => {
+      //updating course table
+      await Course.updateOne({_id: ObjectId(req.body.course_id)},{
+        $push:{
+          teachers: ObjectId(instructor)
+        }
+      });
+      //updating teachers table
+      await Teacher.updateOne({_id: ObjectId(instructor)},{
+        $push:{
+          courses: ObjectId(req.body.course_id)
+        }
+      });
+      
+    });
   
 })
 
