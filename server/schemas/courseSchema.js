@@ -31,6 +31,12 @@ const courseSchema = mongoose.Schema({
     ref: "Video"
     }
    ],
+   students:[
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Student"
+      }
+   ],
    comments:[
     {
     type: mongoose.Types.ObjectId,

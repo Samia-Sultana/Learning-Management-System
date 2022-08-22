@@ -7,6 +7,8 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const studentSchema = require("../schemas/studentSchema");
 const Student = new mongoose.model("Student", studentSchema); //singular name model
+const courseSchema = require("../schemas/courseSchema");
+const Course = new mongoose.model("Course", courseSchema);
 
 
 //student image file handling
@@ -76,6 +78,26 @@ router.post("/signup", /*validation midddleware of student data goes here*/ uplo
           message: "student Signup failed!",
       });
   }
+});
+
+router.post("/enroll/course", upload.single("photo"), async(req,res)=>{
+  console.log(req.body);
+  //ad course to student table
+  await Course.updateOne({_id: ObjectId(req.body.course)},{
+    $push:{
+      students: ObjectId(req.body.student)
+    }
+  });
+  //add student to course table
+  await Student.updateOne({_id: ObjectId(req.body.student)},{
+    $push:{
+      courses: ObjectId(req.body.course)
+    }
+  });
+  //add purshase info in purchase table
+});
+router.post("/update/profile", async(req,res)=>{
+
 });
 
 module.exports = router;
