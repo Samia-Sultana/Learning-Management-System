@@ -1,0 +1,9 @@
+
+.adminFormPart > Form{
+    width: 80%;
+   
+}
+#imageUpload{
+   width: 35%; 
+   margin: auto;
+}

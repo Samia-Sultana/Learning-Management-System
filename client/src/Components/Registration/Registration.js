@@ -9,6 +9,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import firebaseConfig from '../Configuration/firebaseConfig';
 
 const app = initializeApp(firebaseConfig);
+const FormData = require('form-data');
+let formData = new FormData();
 
 
 const Registration = () => {
@@ -18,13 +20,25 @@ const Registration = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
     const onSubmit = data => {
-        const auth = getAuth();
-        createUserWithEmailAndPassword(auth, data.userEmail, data.userPassword)
-            .then((userCredential) => {
-                const token = userCredential.user.accessToken;
-                navigate(from);
-            })
+        formData.delete('userName');
+        formData.delete('userPhone');
+        formData.delete('userEmail');
+        formData.delete('userPassword');
+        formData.delete('userPhoto');
 
+        formData.append('userName', data.userName);
+        formData.append('userPhone', data.userPhone);
+        formData.append('userEmail', data.userEmail);
+        formData.append('userPassword', data.userPassword);
+        formData.append('userPhoto', data.userPhoto[0]);
+        
+        fetch('http://localhost:8080/student/signup', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(res=> res.json())
+                .then(resData => console.log(resData))
+        
     }
 
     const handleGoogleSignUp = () => {
@@ -48,6 +62,10 @@ const Registration = () => {
                             <Form.Control size="sm" type="text" {...register("userName", { required: true })} placeholder="Name" />
                             {errors.userName?.type === 'required' && "User name is required"}
                         </Form.Group>
+                        <Form.Group className="mb-3" controlId="userPhone">
+                            <Form.Control size="sm" type="number" {...register("userPhone", { required: true })} placeholder="Phone" />
+                            {errors.userPhone?.type === 'required' && "User phone number is required"}
+                        </Form.Group>
                         <Form.Group className="mb-3" controlId="userEmail">
                             <Form.Control size="sm" type="email" {...register("userEmail", { required: true })} placeholder="Email" />
                             {errors.userEmail && "email is required"}
@@ -59,6 +77,10 @@ const Registration = () => {
                         <Form.Group className="mb-3" controlId="confirmUserPass">
                             <Form.Control size="sm" type="password" {...register("confirmUserPass", { required: true })} placeholder="Confirm password" />
                             {errors.confirmUserPass?.type === 'required' && "confirm password is required"}
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="userPhoto">
+                            <Form.Control size="sm" type="file" {...register("userPhoto", { required: true })} placeholder="Upload photo" />
+                            {errors.userPhoto?.type === 'required' && "Photo is required"}
                         </Form.Group>
                         <Button type="submit">Sign up</Button>
                     </Form>

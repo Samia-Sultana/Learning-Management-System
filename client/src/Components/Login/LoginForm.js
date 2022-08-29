@@ -1,7 +1,6 @@
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import React from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useForm } from "react-hook-form";
@@ -18,7 +17,6 @@ const LoginForm = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
     const onSubmit = data => {
-        const auth = getAuth();
         fetch(`http://localhost:8080${location.pathname}`, {
                     method: 'POST',
                     headers: {
@@ -27,7 +25,11 @@ const LoginForm = () => {
                     body: JSON.stringify(data)
                 })
                 .then(res => res.json())
-                .then(resData => console.log(resData))
+                .then(resData => {
+                    sessionStorage.setItem("email", resData.email);
+                    sessionStorage.setItem("token", resData.token);
+                    navigate(`${location.pathname}`);
+                })
         
     }
 

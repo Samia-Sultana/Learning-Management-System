@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 var fs = require('fs');
 var path = require('path');
 const multer = require('multer');
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const studentSchema = require("../schemas/studentSchema");
@@ -12,6 +13,7 @@ const Course = new mongoose.model("Course", courseSchema);
 
 
 //student image file handling
+
 const UPLOADS_FOLDER = "./routeHandlers/uploads";
 
 const storage = multer.diskStorage({
@@ -19,6 +21,7 @@ const storage = multer.diskStorage({
     cb(null, UPLOADS_FOLDER);
   },
   filename: (req, file, cb) => {
+    
     const fileExt = path.extname(file.originalname);
     const fileName =
       file.originalname
@@ -38,8 +41,9 @@ const upload = multer({
   limits: {
     fileSize: 5000000, // 5MB
   },
+  
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === "photo") {
+    if (file.fieldname === "userPhoto") {
       if (
         file.mimetype === "image/png" ||
         file.mimetype === "image/jpg" ||
@@ -54,13 +58,14 @@ const upload = multer({
 
 
 // SIGNUP
-router.post("/signup", /*validation midddleware of student data goes here*/ upload.single("photo"), async(req, res) => {
+router.post("/signup", /*validation midddleware of student data goes here */upload.single("userPhoto"),  async(req, res) => {
+ 
   try {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const hashedPassword = await bcrypt.hash(req.body.userPassword, 10);
       const newStudent = new Student({
-          name: req.body.name,
-          phone: req.body.phone,
-          email: req.body.email,
+          name: req.body.userName,
+          phone: req.body.userPhone,
+          email: req.body.userEmail,
           password: hashedPassword,
           photo: {
             data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
@@ -68,16 +73,67 @@ router.post("/signup", /*validation midddleware of student data goes here*/ uplo
           }
       });
 
-      await newStudent.save();
-      res.status(200).json({
-          message: "student Signup was successful!",
-      });
+      const user = await newStudent.save();
+        // generate token
+        const token = jwt.sign({
+          username: user.email,
+          userId: user._id,
+        }, process.env.JWT_SECRET, {
+          expiresIn: '1h'
+        });
+
+        res.status(200).json({
+          "access_token": token,
+          "message": "Login successful!"
+      });  
+      
   }
   catch {
-      res.status(500).json({
-          message: "student Signup failed!",
-      });
+    res.status(401).json({
+      "error": "login  failed!"
+  });
   }
+});
+
+//student login
+router.post("/", async (req, res) => {
+  try{
+    const user = await Student.find({email:req.body.userEmail});
+    if(user && user.length > 0) {
+      console.log(user);
+    const isValidPassword = await bcrypt.compare(req.body.userPassword, user.password);
+    console.log(isValidPassword);
+          if(isValidPassword){
+              // generate token
+              const token = jwt.sign({
+                username: user.email,
+                userId: user._id,
+              }, process.env.JWT_SECRET, {
+                expiresIn: '1h'
+              });
+              res.status(200).json({
+                "access_token": token,
+                "message": "Login successful!"
+            });
+        }
+        else {
+            res.status(401).json({
+                "error": "Authetication failed 1!"
+            });
+        }
+      }
+      else{
+        res.status(401).json({
+          "error": "Authetication failed 2!"
+      });
+      }
+    }
+  catch{
+    res.status(401).json({
+      "error": "Authetication failed 3!"
+  });
+  }
+ 
 });
 
 router.post("/enroll/course", upload.single("photo"), async(req,res)=>{

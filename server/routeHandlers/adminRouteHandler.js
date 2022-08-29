@@ -57,23 +57,14 @@ const upload = multer({
   }
 });
 
-router.get("/", (req, res) => {
-  Admin.find({}, (err, items) => {
-      if (err) {
-          console.log(err);
-          res.status(500).send('An error occurred', err);
-      }
-      else {
-          res.render('imagesPage', { items: items });
-      }
-  });
-});
-router.post("/", upload.single("photo"), async (req, res) => {
+
+/*router.post("/", upload.single("photo"), async (req, res) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
   let newAdmin = {
     name: req.body.name,
     phone: req.body.phone,
     email: req.body.email,
-    password: req.body.password,
+    password: hashedPassword,
     photo: {
       data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
       contentType: 'image/png'
@@ -88,16 +79,10 @@ router.post("/", upload.single("photo"), async (req, res) => {
         res.send("successfully inserted into database");
     }
 });
-});
-
-
-
-router.get("/login", (req,res)=>{
-  res.send("show admin login panel");
-});
+});*/
 
 // LOGIN
-router.post("/login",  async(req, res) => {
+router.post("/",  async(req, res) => {
     
       const admin = await Admin.find({ email: req.body.email });
       if(admin.length > 0) {
@@ -111,15 +96,20 @@ router.post("/login",  async(req, res) => {
                   expiresIn: '1h'
               });
 
-              res.status(200).json({
-                  "access_token": token,
+              res.send({
+                  "token": token,
+                  "email": admin[0].email,
                   "message": "Login successful!"
               });
           } else {
-              res.send("error 1");
+            res.send({
+              "message": "Login failed!!! Please try with valid Info"
+          });
           }
       } else {
-          res.send("error 2");
+          res.send({
+            "message": "Login failed!!! Please try with valid Info"
+        });
       }
 });
 

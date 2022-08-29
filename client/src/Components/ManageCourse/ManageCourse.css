@@ -1,0 +1,24 @@
+.heading{
+    height: 15vh;
+    display: flex;
+    align-items: center;
+}
+.heading h1{
+    padding-left: 100px;
+    
+}
+.table-container{
+    height: 85vh;
+    background-color: rgb(186, 230, 231);
+    padding-top: 50px;
+    overflow-y: auto;
+    padding-bottom: 40px;
+}
+.serviceTable{
+    width:95%;
+    margin: auto;
+    text-align: center;
+    background-color: whitesmoke;
+    border-radius: 10px;
+    height: 60%;
+}

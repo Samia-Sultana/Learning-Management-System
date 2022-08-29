@@ -5,6 +5,8 @@ const { ObjectId } = require('mongodb');
 var fs = require('fs');
 var path = require('path');
 const multer = require('multer');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const teacherSchema = require("../schemas/teacherSchema");
 const Teacher = new mongoose.model("Teacher", teacherSchema); //singular name model
 const videoSchema = require("../schemas/videoSchema");
@@ -53,22 +55,46 @@ const upload = multer({
   }
 });
 
-
-/*router.post("/", (req, res) => {
-  const newTeacher = new Teacher(req.body);
-  newTeacher.save((err) => {
-    if (err) {
-      res.status(500).json({
-        error: "There was a server side error!",
+//teacher login
+router.post("/", async (req, res) => {
+  try{
+    const user = await Teacher.find({email:req.body.userEmail});
+    if(user && user.length > 0) {
+    const isValidPassword = await bcrypt.compare(req.body.userPassword, user.password);
+          if(isValidPassword){
+              // generate token
+              const token = jwt.sign({
+                username: user.email,
+                userId: user._id,
+              }, process.env.JWT_SECRET, {
+                expiresIn: '1h'
+              });
+              res.status(200).json({
+                "access_token": token,
+                "message": "Login successful!"
+            });
+        } else {
+            res.status(401).json({
+                "error": "Authetication failed!"
+            });
+        }
+      }
+      else{
+        res.status(401).json({
+          "error": "Authetication failed!"
       });
-    } else {
-      res.status(200).json({
-        message: "Todo was inserted successfully!",
-      });
+      }
     }
+  catch{
+    res.status(401).json({
+      "error": "Authetication failed!"
   });
+  }
+ 
 });
-*/
+
+
+
 router.post("/upload/video", upload.single("link"),async(req,res)=>{
   let newVideo = {
     title: req.body.title,
@@ -93,6 +119,7 @@ router.post("/upload/video", upload.single("link"),async(req,res)=>{
       res.send("successfully inserted into database");
     }
     
+
 });
 });
 

@@ -4,6 +4,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const adminRouteHandler = require("./routeHandlers/adminRouteHandler");
 const courseRouteHandler = require("./routeHandlers/courseRouteHandler");
 const studentRouteHandler = require("./routeHandlers/studentRouteHandler");
@@ -15,8 +17,9 @@ dotenv.config();
 
 // app
 const app = express();
-app.set("view engine", "ejs");
 app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
 
 
 //database connection
@@ -37,7 +40,7 @@ mongoose.connect("mongodb://localhost:27017/LMS", { useNewUrlParser: true, useUn
 app.get("/", (req,res)=>{
 	res.send("hello world");
 });
-app.use("/admin", adminRouteHandler);
+app.use("/", adminRouteHandler);
 app.use("/course", courseRouteHandler);
 app.use("/teacher", teacherRouteHandler);
 app.use("/student", studentRouteHandler);

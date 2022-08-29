@@ -1,0 +1,12 @@
+.adminPage{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+.adminNavbar{
+    width: 25%;
+}
+.adminPageContent{
+    flex-grow: 3;
+    background-color: white;
+}

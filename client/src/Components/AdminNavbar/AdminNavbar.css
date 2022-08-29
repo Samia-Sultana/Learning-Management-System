@@ -1,0 +1,28 @@
+.navigation{
+    text-align: center;
+    background-color: rgb(29, 39, 29);
+    color: white;
+    height:100%;
+}
+.nav-heading{
+    padding: 40px;
+}
+.nav-items{
+    display: flex;
+    flex-direction: column;
+}
+.nav-items > *{
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    font-weight: 400;
+}
+.item:hover{
+    background-color: rgb(68, 107, 92);
+    color: white;
+}
+
+.item:focus{
+    background-color: rgb(58, 90, 77);
+    color: white;
+}
