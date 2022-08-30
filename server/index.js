@@ -40,7 +40,7 @@ mongoose.connect("mongodb://localhost:27017/LMS", { useNewUrlParser: true, useUn
 app.get("/", (req,res)=>{
 	res.send("hello world");
 });
-app.use("/", adminRouteHandler);
+app.use("/admin", adminRouteHandler);
 app.use("/course", courseRouteHandler);
 app.use("/teacher", teacherRouteHandler);
 app.use("/student", studentRouteHandler);

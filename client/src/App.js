@@ -18,11 +18,11 @@ function App() {
     <div>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<AdminLogin/>} />
+            <Route path="/admin" element={<AdminLogin/>} />
             <Route path="/student" element={<StudentLogin/>} />
             <Route path="/teacher" element={<TeacherLogin/>} />
             <Route path="/registration" element={<Registration/>} />
-            <Route path="/admin" element={ <ProtectedRoute> <AdminPage /></ProtectedRoute> } />
+            <Route path="/admin/:selectedNav" element={ <ProtectedRoute> <AdminPage /></ProtectedRoute> } />
           </Routes>
         </BrowserRouter>
     </div>

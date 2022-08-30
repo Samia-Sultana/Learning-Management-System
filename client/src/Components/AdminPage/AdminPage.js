@@ -3,6 +3,7 @@ import {
     useParams
 } from "react-router-dom";
 import AddCourse from '../AddCourse/AddCourse';
+import AdminDashboard from '../AdminDashboard/AdminDashboard';
 import AdminNavbar from '../AdminNavbar/AdminNavbar';
 import CreateTeacher from '../CreateTeacher/CreateTeacher';
 import ManageCourse from '../ManageCourse/ManageCourse';
@@ -13,13 +14,21 @@ const AdminPage = () => {
     let { selectedNav } = useParams();
     var content;
     const pageContent = () =>{
-        if(selectedNav === 'createTeacher'){
+        console.log("hiiiiiiiiiiiii")
+        if(selectedNav === 'dashboard'){
+            console.log("dashboard")
+            return content = <AdminDashboard/> 
+        }
+        else if(selectedNav === 'createTeacher'){
+            console.log("create teacher")
             return content = <CreateTeacher/> 
         }
         else if(selectedNav === 'manageCourse'){
+            console.log("manage course")
             return content = <ManageCourse/>
         }
         else if(selectedNav === 'addCourse'){
+            console.log("add copurse")
             return content = <AddCourse/>
         }
     }

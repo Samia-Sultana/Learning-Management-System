@@ -84,9 +84,9 @@ const upload = multer({
 // LOGIN
 router.post("/",  async(req, res) => {
     
-      const admin = await Admin.find({ email: req.body.email });
+      const admin = await Admin.find({ email: req.body.userEmail });
       if(admin.length > 0) {
-          const isValidPassword = await bcrypt.compare(req.body.password, admin[0].password);
+          const isValidPassword = await bcrypt.compare(req.body.userPassword, admin[0].password);
           if(isValidPassword) {
               // generate token
               const token = jwt.sign({
@@ -95,7 +95,6 @@ router.post("/",  async(req, res) => {
               }, process.env.JWT_SECRET, {
                   expiresIn: '1h'
               });
-
               res.send({
                   "token": token,
                   "email": admin[0].email,
@@ -185,6 +184,11 @@ router.post("/update/instructor", upload.single("photo"), async(req,res)=>{
       
     });
   
+});
+
+router.get("/manage/course", async(req,res)=>{
+  const courses = await Course.find({});
+  console.log(Course.find({}));
 })
 
 module.exports = router;

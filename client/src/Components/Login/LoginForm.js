@@ -28,7 +28,7 @@ const LoginForm = () => {
                 .then(resData => {
                     sessionStorage.setItem("email", resData.email);
                     sessionStorage.setItem("token", resData.token);
-                    navigate(`${location.pathname}`);
+                    navigate(`${location.pathname}/dashboard`);
                 })
         
     }
@@ -38,7 +38,7 @@ const LoginForm = () => {
                 <div className="login-signup-form">
                     <Form onSubmit={handleSubmit(onSubmit)} className="">
                         <Row>
-                            <Col><Link to="/">Admin</Link></Col>
+                            <Col><Link to="/admin">Admin</Link></Col>
                             <Col><Link to="/student">Student</Link></Col>
                             <Col><Link to="/teacher">Teacher</Link></Col>
                         </Row>

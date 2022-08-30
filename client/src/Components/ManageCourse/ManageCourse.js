@@ -5,27 +5,27 @@ import Button from 'react-bootstrap/Button';
 import './ManageCourse.css';
 
 const  ManageCourse = () => {
-    const [services, setServices] = useState();
+    const [courses, setCourses] = useState();
     useEffect(() => {
-        fetch('http://localhost:4200/getAllService')
+        fetch('http://localhost:8080/manage/course')
             .then(res => res.json())
-            .then(data => setServices(data))
+            .then(data => setCourses(data))
     },[])
     
-    const handleDeleteService =(service)=>{
+   /* const handleDeleteService =(service)=>{
         const serviceId = service._id;
-        fetch(`http://localhost:4200/delete/${serviceId}`)
+        fetch(`http://localhost:8080/delete/${serviceId}`)
         .then(res => res.json())
         .then(data => {
            console.log(data.deletedCount);
-           const remainingService = services.filter(service =>{
+           const remainingService = courses.filter(service =>{
                if(service._id !== serviceId){
                    return service._id;
                }
             })
-            setServices(remainingService);
+            setCourses(remainingService);
         })
-    }
+    }*/
 
     return (
         <div className="manage-product">
@@ -43,12 +43,12 @@ const  ManageCourse = () => {
                 </thead>
                 <tbody>
                      { 
-                     services?.map((service,index) =>(
+                     courses?.map((course,index) =>(
                          <tr key={index} className="tr">
-                             <td>{service.name}</td>
-                             <td>${service.price}</td>
+                             <td>{course.name}</td>
+                             <td>${course.price}</td>
                              <td><Button variant="success" style={{marginRight: "5px"}}><FontAwesomeIcon icon={faPen}/></Button> 
-                             <Button variant="danger" onClick={()=>{handleDeleteService(service)}}><FontAwesomeIcon icon={faTrashAlt}/></Button>
+                             <Button variant="danger" /*onClick={()=>{handleDeleteService(service)}}*/><FontAwesomeIcon icon={faTrashAlt} /></Button>
                              </td>
                         </tr>
                      ))

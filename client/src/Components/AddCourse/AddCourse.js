@@ -15,12 +15,12 @@ const AddCourse = () => {
     const onSubmit = data => {
         console.log(data);
         const formData = new FormData();
-        formData.append('name',data.serviceName);
-        formData.append('price',data.servicePrice);
-        formData.append('description',data.serviceDescription);
-        formData.append('photo',data.serviceImage[0]);
+        formData.append('name',data.courseName);
+        formData.append('price',data.coursePrice);
+        formData.append('description',data.courseDescription);
+        formData.append('photo',data.courseImage[0]);
         
-        fetch('http://localhost:4200/addService',{
+        fetch('http://localhost:8080/create/course',{
             method:'POST',
             body: formData
         })
@@ -37,7 +37,7 @@ const AddCourse = () => {
                 <Form onSubmit={handleSubmit(onSubmit)} className="">
                     <Row className="g-2">
                         <Form.Group as={Col} className="mb-3" controlId="serviceName">
-                            <Form.Label>Service Name</Form.Label>
+                            <Form.Label>Course Name</Form.Label>
                             <Form.Control type="text" {...register("serviceName")} placeholder="Enter name" />
                         </Form.Group>
                         <Form.Group as={Col} className="mb-3" controlId="servicePrice">

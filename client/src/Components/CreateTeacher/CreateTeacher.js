@@ -23,19 +23,10 @@ const CreateTeacher = () => {
             </div>
             <div className="adminFormPart">
                 <form onSubmit={handleSubmit(onSubmit)} className="adminForm">
-                    <div className="adminInput">
-                        <input {...register("name", { required: true })} placeholder="Name" />
-                        {errors.name?.type === 'required' && "First name is required"}
-                    </div>
 
                     <div className="adminInput">
                         <input {...register("email", { required: true })} placeholder="Email" />
                         {errors.email?.type === 'required' && "Email is required"}
-                    </div>
-
-                    <div className="adminInput">
-                        <input {...register("contact", { required: true })} placeholder="Contact number" />
-                        {errors.contact && "Contact Number is required"}
                     </div>
 
                     <div className="adminInput">
